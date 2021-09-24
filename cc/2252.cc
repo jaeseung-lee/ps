@@ -13,6 +13,7 @@ void solve();
 
 int degree[32001];
 bool visited[32001];
+void dfs(int now_index);
 
 int main() {
   ios::sync_with_stdio(false);
@@ -41,14 +42,26 @@ void solve() {
       if (!visited[i]) {
         cout << i << " ";
         visited[i] = true;
-      }
-      for (int j = 0; j < edges[i].size(); j++) {
-        degree[edges[i][j]]--;
-        if (degree[edges[i][j]] == 0) {
-          cout << edges[i][j] << " ";
-          visited[edges[i][j]] = true;
+        for (int j = 0; j < edges[i].size(); j++) {
+          int next = edges[i][j];
+          degree[next]--;
+          if (degree[next] == 0 && !visited[next]) {
+            visited[next] = true;
+            dfs(next);
+          }
         }
       }
+    }
+  }
+}
+void dfs(int now_index) {
+  cout << now_index << " ";
+  for (int j = 0; j < edges[now_index].size(); j++) {
+    int next = edges[now_index][j];
+    degree[next]--;
+    if (degree[next] == 0 && !visited[next]) {
+      visited[next] = true;
+      dfs(next);
     }
   }
 }
