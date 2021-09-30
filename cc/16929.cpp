@@ -59,7 +59,8 @@ void solve() {
             int next_x = now_x + dir[d][1];
             if (is_valid_index(next_y, next_x) &&
                 (Board[now_y][now_x] == Board[next_y][next_x])) {
-              if ((value - 1) != visited[next_y][next_x]) { //바로 전꺼가 아니고
+              if ((value - 1) !=
+                  visited[next_y][next_x]) {  //바로 전꺼가 아니고
                 if (visited[next_y][next_x] == -1) {
                   visited[next_y][next_x] = value + 1;
                   q.push(make_pair(next_y, next_x));
