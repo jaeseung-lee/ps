@@ -5,7 +5,7 @@ using namespace std;
 #define endl '\n'
 #define ll long long
 
-ll Tree[8000000 + 1];
+pair<ll, ll> Tree[8000000 + 1];
 ll A[1000000 + 1];
 int N, K, M;
 ll ans = 0;
@@ -15,8 +15,8 @@ void solve();
 void fill_tree(int tree_index, int start_index, int end_index);
 void insert_target(int tree_index, int start_index, int end_index,
                    int target_start, int target_end, ll target_value);
-void find_target(int tree_index, int start_index, int end_index,
-                 int target_index);
+ll find_target(int tree_index, int start_index, int end_index, int target_start,
+               int target_end);
 
 int main() {
   ios::sync_with_stdio(false);
@@ -44,38 +44,46 @@ void solve() {
     if (a == 1) {
       cin >> b >> c >> d;
       insert_target(1, 1, N, b, c, d);
+      /*
+      cout << "Tree : " << endl;
       for (int i = 1; i <= 2 * N; i++) {
-        cout << Tree[i] << " ";
+        cout << Tree[i].first << " " << Tree[i].second << endl;
       }
-      cout << endl;
+      */
+
     } else {
-      cin >> b;
-      ans = A[b];
-      find_target(1, 1, N, b);
-      cout << ans << endl;
+      cin >> b >> c;
+      cout << find_target(1, 1, N, b, c) << endl;
     }
   }
 }
+
 void fill_tree(int tree_index, int start_index, int end_index) {
-  Tree[tree_index] = 0;
   if (start_index == end_index) {
+    Tree[tree_index] = make_pair(A[start_index], 0);
     return;
   }
   int mid = (start_index + end_index) / 2;
   fill_tree(2 * tree_index, start_index, mid);
   fill_tree(2 * tree_index + 1, mid + 1, end_index);
+  Tree[tree_index] =
+      make_pair(Tree[2 * tree_index].first + Tree[2 * tree_index + 1].first, 0);
+  return;
 }
+
 void insert_target(int tree_index, int start_index, int end_index,
                    int target_start, int target_end, ll target_value) {
   if (start_index == end_index) {
-    Tree[tree_index] += target_value;
+    Tree[tree_index].second += target_value;
     return;
   }
   if (start_index == target_start && end_index == target_end) {
-    Tree[tree_index] += target_value;
+    Tree[tree_index].second += target_value;
     return;
   }
+
   int mid = (start_index + end_index) / 2;
+  Tree[tree_index].first += target_value * (target_end - target_start + 1);
   if (target_end <= mid) {
     insert_target(2 * tree_index, start_index, mid, target_start, target_end,
                   target_value);
@@ -89,16 +97,42 @@ void insert_target(int tree_index, int start_index, int end_index,
                   target_value);
   }
 }
-void find_target(int tree_index, int start_index, int end_index,
-                 int target_index) {
-  ans += Tree[tree_index];
-  if (start_index == end_index) {
-    return;
+
+ll find_target(int tree_index, int start_index, int end_index, int target_start,
+               int target_end) {
+  // cout << "tree_index : " << tree_index << endl;
+  if (Tree[tree_index].second != 0) {
+    Tree[tree_index].first +=
+        Tree[tree_index].second * (end_index - start_index + 1);
+    if (start_index != end_index) {
+      Tree[2 * tree_index].second += Tree[tree_index].second;
+      Tree[2 * tree_index + 1].second += Tree[tree_index].second;
+    }
+    Tree[tree_index].second = 0;
   }
+
+  if (start_index == end_index) {
+    return Tree[tree_index].first;
+  }
+
+  if (start_index == target_start && end_index == target_end) {
+    return Tree[tree_index].first;
+  }
+
   int mid = (start_index + end_index) / 2;
-  if (target_index <= mid) {
-    find_target(2 * tree_index, start_index, mid, target_index);
+  if (target_end <= mid) {
+    return find_target(2 * tree_index, start_index, mid, target_start,
+                       target_end);
+  } else if (mid < target_start) {
+    return find_target(2 * tree_index + 1, mid + 1, end_index, target_start,
+                       target_end);
   } else {
-    find_target(2 * tree_index + 1, mid + 1, end_index, target_index);
+    ll left, right;
+    left = find_target(2 * tree_index, start_index, mid, target_start, mid);
+    right = find_target(2 * tree_index + 1, mid + 1, end_index, mid + 1,
+                        target_end);
+    // cout << "tree_index : " << tree_index << endl;
+    // cout << "left : " << left << " right : " << right << endl;
+    return left + right;
   }
 }
