@@ -12,6 +12,7 @@ def solve(maxsize, nowsize):
 def print_empty(count):
   for i in range(count):
     print(" ", end='')
+
 while True:
   try:
     N = int(sys.stdin.readline())
