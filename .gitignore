@@ -2,3 +2,4 @@
 .vscode
 /cc/test.cc
 *.c
+*/test.*
