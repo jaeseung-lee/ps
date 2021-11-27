@@ -107,8 +107,8 @@ void solve() {
       if (shark.is_alive) {
         switch (shark.dir) {
           case UP:
-            if ((C - shark.c - 1 - shark.velocity) % C) break;
 
+            break;
           case DOWN:
 
             break;
@@ -118,7 +118,11 @@ void solve() {
             break;
 
           case RIGHT:
-
+            if ((shark.r + shark.velocity) % (2 * R - 2) <= R) {
+              shark.r = (shark.r + shark.velocity) % (2 * R - 2);
+            } else {
+              shark.r = 2 * R - (shark.r + shark.velocity) % (2 * R - 2);
+            }
             break;
 
           default:
