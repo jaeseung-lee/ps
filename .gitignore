@@ -3,3 +3,4 @@
 /cc/test.cc
 *.c
 */test.*
+*format.cc
